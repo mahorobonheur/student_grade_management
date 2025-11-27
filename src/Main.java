@@ -12,6 +12,7 @@ public class Main {
         int choice = 0;
         StudentManager studentManager = new StudentManager();
         GradeManager gradeManager = new GradeManager(studentManager);
+        studentManager.setGradeManager(gradeManager);
 
         do{
 
@@ -48,7 +49,7 @@ public class Main {
                         studentManager.addStudent(null);
                         break;
                     case 2:
-                        System.out.println("View Students");
+                        studentManager.viewAllStudents();
                         break;
                     case 3:
                         gradeManager.addGrade(null);
@@ -57,6 +58,7 @@ public class Main {
                         gradeManager.viewGradeByStudent(null);
                         break;
                     case 5:
+                        System.out.println("Thank you for using Student Grade Management System! \nGoodbye!");
                         System.exit(0);
                         break;
                     default:

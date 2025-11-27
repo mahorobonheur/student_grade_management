@@ -25,6 +25,9 @@ public class GradeManager {
             new ElectiveSubject("Physical Education", "PE101")
     };
 
+    public GradeManager(){
+
+    }
     public GradeManager(StudentManager studentManager){
         this.studentManager = studentManager;
     }
@@ -161,90 +164,90 @@ public class GradeManager {
             return;
         }
 
-        System.out.println("Student Details:");
-        System.out.println("Name: " + student.getName());
-        System.out.println("Type: " + student.getStudentType());
-        System.out.println("Current Average: " +calculateOverallAverage(id));
-        System.out.println("Status: ");
+
+
+        int foundCount = 0;
+        for (int i = 0; i < gradeCount; i++) {
+            Grade g = grades[i];
+            if (g != null && g.getStudentId().equals(id)) {
+                foundCount++;
+            }
+        }
+
+        if (foundCount == 0) {
+            System.out.println("Student: " +student.getStudentId() + " - " + student.getName());
+            System.out.println("Type: " + student.getStudentType());
+
+            double passingRequirement = (student instanceof RegularStudent) ? 50 : 60;
+            System.out.println("Passing: " + (int) passingRequirement + "%");
+            System.out.println();
+            System.out.println("----------------------------------------------------------");
+            System.out.println("No grades recorded for this student.");
+            System.out.println("----------------------------------------------------------");
+            System.out.println("Press Enter to continue...");
+            scanner.nextLine();
+            return;
+        }
+
+
+
+
+
+        System.out.println("Student: " +student.getStudentId() + " - " + student.getName());
+        System.out.println("Type: " + student.getStudentType() + " Student");
+
+        double passingRequirement = (student instanceof RegularStudent) ? 50 : 60;
+        System.out.println("Current Average: " +  calculateOverallAverage(id) + "%");
+        if(calculateOverallAverage(id) < passingRequirement){
+            System.out.println("Status: "  + "Failing ❌" );
+         } else {
+            System.out.println("Status: " + "Passing ✅");
+        }
 
         System.out.println("GRADE HISTORY");
-        System.out.println("_________________________________________________________");
-        System.out.println(" GRD ID   | DATE       | SUBJECT      | TYPE    | GRADE   ");
-        System.out.println("----------------------------------------------------------");
-
-        boolean found = false;
+        System.out.println("_________________________________________________________________________________________________");
+        System.out.printf("%-15s | %-20s | %-12s | %-12s | %-10s %n", "GRD ID","DATE", "SUBJECT", "TYPE", "GRADE");
+        System.out.println("-------------------------------------------------------------------------------------------------");
 
         int count = 0;
-
-
-
-
-        for(int i = 0; i < grades.length; i++) {
-
-            if (grades[i] != null && grades[i].getStudentId().equals(id)) {
-                found = true;
-                System.out.printf("%s | %s | %s | %s | %.2f\n",
-                        grades[i].getGradeId(),
-                        grades[i].getDate(),
-                        grades[i].getSubject().getSubjectName(),
-                        grades[i].getSubject().getSubjectType(),
-                        grades[i].getGrade()
-                );
-
+        for (int i = gradeCount - 1; i >= 0; i--) {
+            Grade g = grades[i];
+            if (g != null && g.getStudentId().equals(id)) {
+                g.displayGradeDetails();
                 count++;
             }
         }
 
-        if(found){
+        System.out.println("-------------------------------------------------------------------------------------------------");
+        System.out.println("Total Grades: " + count);
+        double coreAvg = calculateCoreAverage(id);
+        double electiveAvg = calculateElectiveAverage(id);
+        double overallAvg = calculateOverallAverage(id);
 
-            System.out.println("Total Grades: " +count);
-            System.out.println("Core subjects Average: " +calculateCoreAverage(id));
-            System.out.println("Elective Subjects Average: " +calculateElectiveAverage(id));
-            System.out.println("Overall Average: " + calculateOverallAverage(id));
+        System.out.printf("Core subjects Average: %.2f\n", coreAvg);
+        System.out.printf("Elective Subjects Average: %.2f\n", electiveAvg);
+        System.out.printf("Overall Average: %.2f\n", overallAvg);
 
-            System.out.println("Performance Summary: ");
+        System.out.println();
+        System.out.println("Performance Summary: ");
 
-            double coreAvg = calculateCoreAverage(id);
-            double overallAvg = calculateOverallAverage(id);
-            double electiveAvg = calculateElectiveAverage(id);
-            double passingRequirement = 0;
-
-            if (student instanceof RegularStudent) {
-                passingRequirement = 50;
-            } else {
-                passingRequirement = 60;
-            }
-
-            if (coreAvg >= passingRequirement) {
-                System.out.println("✅ Passing all core subjects ");
-            } else {
-                System.out.println("❌ Not passing core subjects (Required: " + passingRequirement + "%)");
-            }
-
-            if (overallAvg >= passingRequirement) {
-                System.out.println("✅ Meeting overall passing requirement (" + passingRequirement + "%)");
-            } else {
-                System.out.println("❌ Not meeting overall passing requirement (" + passingRequirement + "%)");
-            }
-
-
-            System.out.println("Press enter to continue");
-            scanner.nextLine();
+        if (coreAvg >= passingRequirement) {
+            System.out.println("✅ Passing all core subjects (Required: " + (int) passingRequirement + "%)");
+        } else {
+            System.out.println("❌ Not passing core subjects (Required: " + (int) passingRequirement + "%)");
         }
 
-        if (!found) {
-            System.out.println("----------------------------------------------------------");
-            System.out.println("No grades recorded for this student.");
-            System.out.println("----------------------------------------------------------");
+        if (overallAvg >= passingRequirement) {
+            System.out.println("✅ Meeting overall passing requirement (" + (int) passingRequirement + "%)");
+        } else {
+            System.out.println("❌ Not meeting overall passing requirement (" + (int) passingRequirement + "%)");
         }
 
         System.out.println("----------------------------------------------------------");
         System.out.println("Press Enter to continue...");
-
         scanner.nextLine();
-
-
     }
+
 
     public double calculateCoreAverage(String studentId){
         int countCore = 0;
@@ -294,9 +297,37 @@ public class GradeManager {
 
     }
 
-    public void getGradeCount(){
-
+    public int getGradeCount(){
+        return gradeCount;
     }
+
+    public int getRegisteredSubjects(String studentId) {
+        String[] subjectCodes = new String[50];
+        int count = 0;
+
+        for (int i = 0; i < gradeCount; i++) {
+            Grade g = grades[i];
+            if (g != null && g.getStudentId().equals(studentId)) {
+
+                String code = g.getSubject().getSubjectCode();
+
+                boolean exists = false;
+                for (int j = 0; j < count; j++) {
+                    if (subjectCodes[j].equals(code)) {
+                        exists = true;
+                        break;
+                    }
+                }
+
+                if (!exists) {
+                    subjectCodes[count++] = code;
+                }
+            }
+        }
+
+        return count;
+    }
+
 
 
 

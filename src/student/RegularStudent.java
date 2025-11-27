@@ -13,13 +13,13 @@ public class RegularStudent extends Student{
 
     @Override
     public void displayStudentDetails() {
-        System.out.println("Student ID: " +getStudentId());
-        System.out.println("Name: " +getName());
-        System.out.println("Type: " +getStudentType());
-        System.out.println("Age: " +getAge());
-        System.out.println("Email: " +getEmail());
-        System.out.println("Passing Grade: " +getPassingGrade() + "%");
-        System.out.println("Status: " +getStatus());
+        System.out.println("   Student ID: " +getStudentId());
+        System.out.println("   Name: " +getName());
+        System.out.println("   Type: " +getStudentType());
+        System.out.println("   Age: " +getAge());
+        System.out.println("   Email: " +getEmail());
+        System.out.println("   Passing Grade: " +getPassingGrade() + "%");
+        System.out.println("   Status: " +getStatus());
 
     }
 

@@ -18,9 +18,17 @@ public class Grade implements Gradable {
         this.grade = grade;
     }
 
-    public void displayGradeDetails(){
-
+    public void displayGradeDetails() {
+        System.out.printf(
+                "%-10s | %-12s | %-20s | %-10s | %-6.2f%% %n",
+                gradeId,
+                date,
+                subject.getSubjectName(),
+                subject.getSubjectType(),
+                grade
+        );
     }
+
 
     public void getLetterGrade(){
 
@@ -28,14 +36,19 @@ public class Grade implements Gradable {
 
 
     @Override
-    public boolean recordGrade(double grade) {
-        return false;
+    public boolean validateGrade(double grade) {
+        return grade >= 0 && grade <= 100;
     }
 
     @Override
-    public boolean validateGrade(double grade) {
+    public boolean recordGrade(double grade) {
+        if (validateGrade(grade)) {
+            this.grade = grade;
+            return true;
+        }
         return false;
     }
+
 
     public static int getGradeCounter() {
         return gradeCounter;
@@ -68,6 +81,7 @@ public class Grade implements Gradable {
     public void setSubject(Subject subject) {
         this.subject = subject;
     }
+
 
     public double getGrade() {
         return grade;

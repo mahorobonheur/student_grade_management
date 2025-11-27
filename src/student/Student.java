@@ -1,5 +1,7 @@
 package student;
 
+import gradable.GradeManager;
+
 public abstract class Student {
     private String studentId;
     private String name;
@@ -8,6 +10,10 @@ public abstract class Student {
     private String phone;
     private String status = "Active";
     static int studentCounter = 1;
+
+    protected GradeManager gradeManager;
+    protected StudentManager studentManager;
+
 
     public Student(){
 
@@ -22,11 +28,21 @@ public abstract class Student {
     public abstract void displayStudentDetails();
     public abstract String getStudentType();
     public abstract double getPassingGrade();
-    public void calculateAverageGrade(){
-
+    public double calculateAverageGrade(){
+        double avg = gradeManager.calculateOverallAverage(this.studentId);
+        return avg;
     }
 
-    void isPassing(){}
+
+
+    public String isPassing(String id){
+        double passingRequirement = (studentManager.findStudent(id) instanceof RegularStudent) ? 50 : 60;
+        if(gradeManager.calculateOverallAverage(id) < passingRequirement){
+            return  "Failing";
+        } else {
+            return "Passing";
+        }
+    }
 
     public String getStudentId() {
         return studentId;
@@ -82,5 +98,21 @@ public abstract class Student {
 
     public static void setStudentCounter(int studentCounter) {
         Student.studentCounter = studentCounter;
+    }
+
+    public GradeManager getGradeManager() {
+        return gradeManager;
+    }
+
+    public void setGradeManager(GradeManager gradeManager) {
+        this.gradeManager = gradeManager;
+    }
+
+    public StudentManager getStudentManager() {
+        return studentManager;
+    }
+
+    public void setStudentManager(StudentManager studentManager) {
+        this.studentManager = studentManager;
     }
 }

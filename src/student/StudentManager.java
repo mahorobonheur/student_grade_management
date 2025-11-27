@@ -1,5 +1,8 @@
 package student;
 
+import gradable.Grade;
+import gradable.GradeManager;
+
 import java.util.Scanner;
 
 public class StudentManager {
@@ -7,6 +10,8 @@ public class StudentManager {
     private int studentCount;
 
      Scanner scanner = new Scanner(System.in);
+    GradeManager gradeManager = new GradeManager();
+
 
     public void addStudent(Student students){
         System.out.println("ADD STUDENT");
@@ -102,7 +107,7 @@ public class StudentManager {
 
         System.out.println("Student Type: ");
         System.out.println("1. Regular Student (Passing grade: 50%)");
-        System.out.println("2. Honors Student (Passing grade: 60%, honors recognition");
+        System.out.println("2. Honors Student (Passing grade: 60%, honors recognition)");
         int studentTypeChoice = scanner.nextInt();
         while(studentTypeChoice < 1 || studentTypeChoice > 2){
             System.out.println("Invalid choice! Please enter choice between 1 or 2.");
@@ -113,6 +118,8 @@ public class StudentManager {
         if(studentTypeChoice == 1){
             RegularStudent newStudent = new RegularStudent(studentName, age, email, phone);
             newStudent.setStudentId(String.format("STU%03d", studentCount +1));
+            newStudent.setGradeManager(this.gradeManager);
+            newStudent.setStudentManager(this);
             if (studentCount >= student.length) {
                 System.out.println("Cannot add more grades. Storage is full.");
                 return;
@@ -120,16 +127,17 @@ public class StudentManager {
             student[studentCount] = newStudent;
             studentCount++;
 
-
             System.out.println("✅ Student added successfully!");
             newStudent.displayStudentDetails();
-            System.out.println("Press Enter to continue...");
+            System.out.println("\nPress Enter to continue...");
             scanner.nextLine();
         } else {
 
             HonorsStudent newStudent = new HonorsStudent(studentName, age, email, phone);
             newStudent.setStudentId(String.format("STU%03d", studentCount +1));
             student[studentCount] = newStudent;
+            newStudent.setStudentManager(this);
+            newStudent.setGradeManager(this.gradeManager);
             if (studentCount >= student.length) {
                 System.out.println("Cannot add more grades. Storage is full.");
                 return;
@@ -160,13 +168,106 @@ public class StudentManager {
 
     public void viewAllStudents(){
 
+        int regularCount = 0;
+        int honorsCount = 0;
+
+        for (Student s : student) {
+            if (s != null) {
+                if (s.getStudentType().equals("Regular")) regularCount++;
+                else if (s.getStudentType().equals("Honors")) honorsCount++;
+            }
+        }
+
+
+        if (regularCount < 3 || honorsCount < 2) {
+            System.out.println("⚠ Cannot display listing.");
+            System.out.println("Minimum requirements:");
+            System.out.println("- At least 3 Regular Students (current: " + regularCount + ")");
+            System.out.println("- At least 2 Honors Students (current: " + honorsCount + ")");
+            return;
+        }
+
+
+        System.out.println("STUDENT LISTING");
+        System.out.println("___________________________________________________________________________________________________");
+        System.out.printf("%-15s | %-25s | %-20s | %-12s | %-10s %n", "STU ID", " NAME", "TYPE", "AVG GRADE", "STATUS");
+        System.out.println("---------------------------------------------------------------------------------------------------");
+
+        int studentCount = 0;
+
+
+        for(int i = 0; i < student.length; i++){
+            Student stud = student[i];
+           if(stud != null ){
+               double averageGrades = gradeManager.calculateOverallAverage(stud.getStudentId());
+
+               System.out.printf("%-15s | %-25s | %-20s | %-12s | %-10s%n",
+                       stud.getStudentId(),
+                       stud.getName(),
+                       stud.getStudentType(),
+                       String.format("%.1f%%", averageGrades),
+                       stud.isPassing(stud.getStudentId()));
+
+
+               int totalSubjects = gradeManager.getRegisteredSubjects(stud.getStudentId());
+               if(stud.getStudentType().equals("Regular")) {
+                   System.out.printf("%-15s | %-28s | %-35s %n", " ", "Enrolled Subjects: " +totalSubjects, "Passing Grade: " + stud.getPassingGrade() +"%");
+                   System.out.println("---------------------------------------------------------------------------------------------------");
+               } else{
+                   if(gradeManager.calculateOverallAverage(stud.getStudentId()) >= 85){
+                       HonorsStudent honorsStudent = new HonorsStudent();
+                       honorsStudent.setHonorsEligible(true);
+                       if(honorsStudent.isHonorsEligible()){
+                           System.out.printf("%-15s | %-28s | %-28s  | %-25s %n", " ", "Enrolled Subjects: "  +totalSubjects, "Passing Grade: " + stud.getPassingGrade() + "%", "Honors Eligible");
+                           System.out.println("---------------------------------------------------------------------------------------------------");
+
+                       }
+                   }
+                   else {
+                       System.out.printf("%-15s | %-28s | %-28s  | %-25s %n", " ", "Enrolled Subjects: "  +totalSubjects, "Passing Grade: " + stud.getPassingGrade() +"%", "Not Honors Eligible");
+                       System.out.println("---------------------------------------------------------------------------------------------------");
+
+                   }
+                       }
+               studentCount++;
+           }
+
+        }
+
+        System.out.println("\nTotal Students: " +studentCount);
+        System.out.printf("Average Class Grade: %.1f %% ",getAverageClassGrade());
+        System.out.println();
+        System.out.println("\nPress enter to continue");
+        scanner.nextLine();
+
     }
 
-    public void getAverageClassGrade(){
 
+    public double getAverageClassGrade() {
+        double total = 0;
+        double countedStudents = 0;
+
+        for (Student s : student) {
+            if (s != null) {
+                double avg = s.calculateAverageGrade();
+                if (avg > 0) {
+                    total += avg;
+                    countedStudents++;
+                }
+            }
+        }
+
+        if (countedStudents == 0) return 0;
+
+        return total / countedStudents;
     }
+
 
     public int getStudentCount() {
         return studentCount;
+    }
+
+    public void setGradeManager(GradeManager gradeManager) {
+        this.gradeManager = gradeManager;
     }
 }
