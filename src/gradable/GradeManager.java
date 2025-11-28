@@ -16,6 +16,8 @@ public class GradeManager {
     private StudentManager studentManager;
     Scanner scanner = new Scanner(System.in);
 
+    //An array that holds all subjects and their codes as objects
+
     private Subject[] subject ={
             new CoreSubject("Mathematics", "MAT101"),
             new CoreSubject("English", "EN101"),
@@ -49,7 +51,7 @@ public class GradeManager {
         System.out.println("Student Details:");
         System.out.println("Name: " + student.getName());
         System.out.println("Type: " + student.getStudentType());
-        System.out.println("Current Average: " +calculateOverallAverage(id));
+        System.out.printf("Current Average: %.1f%% " ,  calculateOverallAverage(id));
         System.out.println();
 
 
@@ -100,7 +102,6 @@ public class GradeManager {
 
         Subject selectedSubject = filtered[subjectChoice - 1];
 
-
         System.out.print("Enter grade (0–100): ");
         double gradeValue;
 
@@ -111,6 +112,33 @@ public class GradeManager {
             } catch (Exception ignored) { }
             System.out.print("Invalid! Enter grade between 0–100: ");
         }
+
+        Grade existing = findExistingGrade(student.getStudentId(), selectedSubject.getSubjectCode());
+
+        if (existing != null) {
+            System.out.println("\nA grade for this subject already exists!");
+            System.out.println("Current Marks: " + existing.getGrade() + "%");
+
+            System.out.print("Do you want to UPDATE the marks? (Y/N): ");
+            String update = scanner.nextLine().trim();
+
+            while (!update.equalsIgnoreCase("Y") && !update.equalsIgnoreCase("N")) {
+                System.out.print("Invalid! Enter Y or N: ");
+                update = scanner.nextLine().trim();
+            }
+
+            if (update.equalsIgnoreCase("Y")) {
+                existing.setGrade(gradeValue);
+                System.out.println("Grade updated successfully!");
+            } else {
+                System.out.println("Update cancelled.");
+            }
+
+            System.out.println("Press enter to continue.");
+            scanner.nextLine();
+            return;
+        }
+
 
 
         theGrade = new Grade(student.getStudentId(), selectedSubject, gradeValue);
@@ -189,22 +217,18 @@ public class GradeManager {
             return;
         }
 
-
-
-
-
         System.out.println("Student: " +student.getStudentId() + " - " + student.getName());
         System.out.println("Type: " + student.getStudentType() + " Student");
 
         double passingRequirement = (student instanceof RegularStudent) ? 50 : 60;
-        System.out.println("Current Average: " +  calculateOverallAverage(id) + "%");
+        System.out.printf("Current Average: %.1f%%", calculateOverallAverage(id));
         if(calculateOverallAverage(id) < passingRequirement){
-            System.out.println("Status: "  + "Failing ❌" );
+            System.out.println("\nStatus: "  + "Failing ❌" );
          } else {
-            System.out.println("Status: " + "Passing ✅");
+            System.out.println("\nStatus: " + "Passing ✅");
         }
 
-        System.out.println("GRADE HISTORY");
+        System.out.println("\nGRADE HISTORY");
         System.out.println("_________________________________________________________________________________________________");
         System.out.printf("%-15s | %-20s | %-12s | %-12s | %-10s %n", "GRD ID","DATE", "SUBJECT", "TYPE", "GRADE");
         System.out.println("-------------------------------------------------------------------------------------------------");
@@ -224,9 +248,9 @@ public class GradeManager {
         double electiveAvg = calculateElectiveAverage(id);
         double overallAvg = calculateOverallAverage(id);
 
-        System.out.printf("Core subjects Average: %.2f\n", coreAvg);
-        System.out.printf("Elective Subjects Average: %.2f\n", electiveAvg);
-        System.out.printf("Overall Average: %.2f\n", overallAvg);
+        System.out.printf("Core subjects Average: %.1f%%\n", coreAvg);
+        System.out.printf("Elective Subjects Average: %.1f%%\n", electiveAvg);
+        System.out.printf("Overall Average: %.1f%%\n", overallAvg);
 
         System.out.println();
         System.out.println("Performance Summary: ");
@@ -327,6 +351,20 @@ public class GradeManager {
 
         return count;
     }
+
+    private Grade findExistingGrade(String studentId, String subjectCode) {
+        for (int i = 0; i < gradeCount; i++) {
+            Grade g = grades[i];
+            if (g != null &&
+                    g.getStudentId().equals(studentId) &&
+                    g.getSubject().getSubjectCode().equals(subjectCode)) {
+
+                return g;
+            }
+        }
+        return null;
+    }
+
 
 
 

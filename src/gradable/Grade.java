@@ -20,12 +20,12 @@ public class Grade implements Gradable {
 
     public void displayGradeDetails() {
         System.out.printf(
-                "%-10s | %-12s | %-20s | %-10s | %-6.2f%% %n",
+                "%-15s | %-20s | %-12s | %-12s | %-10s %n",
                 gradeId,
                 date,
                 subject.getSubjectName(),
                 subject.getSubjectType(),
-                grade
+                String.format("%.1f%%", grade)
         );
     }
 

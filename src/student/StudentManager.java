@@ -3,6 +3,7 @@ package student;
 import gradable.Grade;
 import gradable.GradeManager;
 
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class StudentManager {
@@ -24,15 +25,15 @@ public class StudentManager {
                 System.out.println("Please enter a name with more than 3 characters: ");
                 studentName = scanner.nextLine();
             } else {
-                boolean validate = true;
+                boolean validateName = true;
                 for(char c : studentName.toCharArray()){
                     if(!Character.isLetter(c) && c != ' '){
-                        validate = false;
+                        validateName = false;
                         break;
                     }
 
                 }
-                if(validate) break;
+                if(validateName) break;
                 System.out.println("Name must contain only letters: ");
                 studentName = scanner.nextLine();
             }
@@ -67,6 +68,7 @@ public class StudentManager {
                 int at = email.indexOf('@');
                 int dot = email.lastIndexOf('.');
 
+                   //to validate the email the @ symbol must come before dot(.)
                 if (at > 0 && dot > at + 1 && dot < email.length() - 1) {
                     break;
                 }
@@ -86,20 +88,20 @@ public class StudentManager {
                 p = p.substring(1);
             }
 
-            boolean valid = true;
+            boolean validatePhone = true;
 
             if (p.length() < 10 || p.length() > 13) {
-                valid = false;
+                validatePhone = false;
             }
 
             for (char c : p.toCharArray()) {
                 if (!Character.isDigit(c)) {
-                    valid = false;
+                    validatePhone = false;
                     break;
                 }
             }
 
-            if (valid) break;
+            if (validatePhone) break;
 
             System.out.print("Invalid phone number (10–13 digits): ");
             phone = scanner.nextLine().trim();
@@ -108,12 +110,22 @@ public class StudentManager {
         System.out.println("Student Type: ");
         System.out.println("1. Regular Student (Passing grade: 50%)");
         System.out.println("2. Honors Student (Passing grade: 60%, honors recognition)");
-        int studentTypeChoice = scanner.nextInt();
-        while(studentTypeChoice < 1 || studentTypeChoice > 2){
-            System.out.println("Invalid choice! Please enter choice between 1 or 2.");
-            studentTypeChoice = scanner.nextInt();
+        int studentTypeChoice = 0;
+
+        while (true) {
+            try {
+                studentTypeChoice = Integer.parseInt(scanner.nextLine().trim());
+
+                if (studentTypeChoice == 1 || studentTypeChoice == 2) {
+                    break;
+                }
+
+                System.out.print("Invalid choice! Enter 1 or 2: ");
+            }
+            catch (NumberFormatException e) {
+                System.out.print("Invalid input! Enter a NUMBER (1 or 2): ");
+            }
         }
-        scanner.nextLine();
 
         if(studentTypeChoice == 1){
             RegularStudent newStudent = new RegularStudent(studentName, age, email, phone);
@@ -180,7 +192,7 @@ public class StudentManager {
 
 
         if (regularCount < 3 || honorsCount < 2) {
-            System.out.println("⚠ Cannot display listing.");
+            System.out.println("Cannot display listing.");
             System.out.println("Minimum requirements:");
             System.out.println("- At least 3 Regular Students (current: " + regularCount + ")");
             System.out.println("- At least 2 Honors Students (current: " + honorsCount + ")");

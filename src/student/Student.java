@@ -2,6 +2,10 @@ package student;
 
 import gradable.GradeManager;
 
+/**
+ * The abstract class that holds methods that will be used by subclasses which will override its methods and implement them in different ways.
+ */
+
 public abstract class Student {
     private String studentId;
     private String name;

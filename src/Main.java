@@ -4,8 +4,10 @@ import student.StudentManager;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
+/**
+ * This the main class that will be used to call other classes in order to run the application.
+ * I chose to use switch case to choose an option and that option corresponds to a function call from other class that performs that action
+ */
 public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);

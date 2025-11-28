@@ -1,5 +1,8 @@
 package student;
 
+/**
+ * This class manages student who is considered as Honors student
+ */
 public class HonorsStudent extends Student{
     private double passingGrade = 60;
     private boolean honorsEligible = false;
