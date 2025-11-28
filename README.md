@@ -72,6 +72,3 @@ How to Run
 Author
 ======
 Bonheur Mahoro
-Honors students must score 85% or above for honors recognition
-
-Regular students pass at 50%, Honors at 60%
