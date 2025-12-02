@@ -27,7 +27,12 @@ public class Main {
             System.out.println(" 2. View Students");
             System.out.println(" 3. Record Grade");
             System.out.println(" 4. View Grade Report");
-            System.out.println(" 5. Exit \n");
+            System.out.println(" 5. Export Grade Report");
+            System.out.println(" 6. Calculate Student GPA");
+            System.out.println(" 7. Bulk Grade Import");
+            System.out.println(" 8. View Class Statistics");
+            System.out.println(" 9. Search Students");
+            System.out.println(" 10. Exit \n");
             System.out.println("Enter choice: ");
 
             try {
@@ -62,13 +67,13 @@ public class Main {
                     gradeManager.viewGradeByStudent(null);
                     break;
                 case 5:
-                    System.out.println("Export grade report");
+                    gradeManager.exportGradeReport();
                     break;
                 case 6:
                     System.out.println("Calculate Student GPA");
                     break;
                 case 7:
-                    System.out.println("Bulk Grade import");
+                    studentManager.exportAllStudentsReport();
                     break;
                 case 8:
                     System.out.println("View Class Statistics");

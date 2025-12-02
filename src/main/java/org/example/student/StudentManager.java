@@ -1,6 +1,7 @@
 package org.example.student;
 
 import org.example.grade.GradeManager;
+import org.example.newImprementations.FileExporter;
 
 import java.util.InputMismatchException;
 import java.util.Scanner;
@@ -11,7 +12,6 @@ public class StudentManager {
 
     Scanner scanner = new Scanner(System.in);
     GradeManager gradeManager = new GradeManager();
-
 
     public void addStudent(Student students){
         System.out.println("ADD STUDENT");
@@ -30,13 +30,11 @@ public class StudentManager {
                         validateName = false;
                         break;
                     }
-
                 }
                 if(validateName) break;
                 System.out.println("Name must contain only letters: ");
                 studentName = scanner.nextLine();
             }
-
         }
 
         System.out.print("Enter age: ");
@@ -56,7 +54,6 @@ public class StudentManager {
             }
         }
 
-
         System.out.print("Enter email: ");
         String email = scanner.nextLine().trim();
 
@@ -67,7 +64,6 @@ public class StudentManager {
                 int at = email.indexOf('@');
                 int dot = email.lastIndexOf('.');
 
-                //to validate the email the @ symbol must come before dot(.)
                 if (at > 0 && dot > at + 1 && dot < email.length() - 1) {
                     break;
                 }
@@ -132,7 +128,7 @@ public class StudentManager {
             newStudent.setGradeManager(this.gradeManager);
             newStudent.setStudentManager(this);
             if (studentCount >= student.length) {
-                System.out.println("Cannot add more grades. Storage is full.");
+                System.out.println("Cannot add more students. Storage is full.");
                 return;
             }
             student[studentCount] = newStudent;
@@ -140,30 +136,36 @@ public class StudentManager {
 
             System.out.println("✅ Student added successfully!");
             newStudent.displayStudentDetails();
+
+            System.out.println("\n📁 Auto-exporting student data to file...");
+            double averageGrade = gradeManager.calculateOverallAverage(newStudent.getStudentId());
+            int subjectCount = gradeManager.getRegisteredSubjects(newStudent.getStudentId());
+            FileExporter.exportStudentToFile(newStudent, averageGrade, subjectCount);
             System.out.println("\nPress Enter to continue...");
             scanner.nextLine();
         } else {
-
             HonorsStudent newStudent = new HonorsStudent(studentName, age, email, phone);
             newStudent.setStudentId(String.format("STU%03d", studentCount +1));
             student[studentCount] = newStudent;
             newStudent.setStudentManager(this);
             newStudent.setGradeManager(this.gradeManager);
             if (studentCount >= student.length) {
-                System.out.println("Cannot add more grades. Storage is full.");
+                System.out.println("Cannot add more students. Storage is full.");
                 return;
             }
             studentCount++;
 
-
             System.out.println("✅ Student added successfully!");
             newStudent.displayStudentDetails();
+
+            System.out.println("\n📁 Auto-exporting student data to file...");
+            double averageGrade = gradeManager.calculateOverallAverage(newStudent.getStudentId());
+            int subjectCount = gradeManager.getRegisteredSubjects(newStudent.getStudentId());
+            FileExporter.exportStudentToFile(newStudent, averageGrade, subjectCount);
+
             System.out.println("Press Enter to continue...");
             scanner.nextLine();
-
-
         }
-
     }
 
     public Student findStudent(String studentId){
@@ -171,14 +173,11 @@ public class StudentManager {
             if(student[i].getStudentId().equals(studentId)){
                 return student[i];
             }
-
         }
         return null;
-
     }
 
     public void viewAllStudents(){
-
         int regularCount = 0;
         int honorsCount = 0;
 
@@ -189,23 +188,21 @@ public class StudentManager {
             }
         }
 
-
         if (regularCount < 3 || honorsCount < 2) {
             System.out.println("Cannot display listing.");
             System.out.println("Minimum requirements:");
             System.out.println("- At least 3 Regular Students (current: " + regularCount + ")");
             System.out.println("- At least 2 Honors Students (current: " + honorsCount + ")");
+            scanner.nextLine();
             return;
         }
-
 
         System.out.println("STUDENT LISTING");
         System.out.println("___________________________________________________________________________________________________");
         System.out.printf("%-15s | %-25s | %-20s | %-12s | %-10s %n", "STU ID", " NAME", "TYPE", "AVG GRADE", "STATUS");
         System.out.println("---------------------------------------------------------------------------------------------------");
 
-        int studentCount = 0;
-
+        int displayCount = 0;
 
         for(int i = 0; i < student.length; i++){
             Student stud = student[i];
@@ -219,40 +216,30 @@ public class StudentManager {
                         String.format("%.1f%%", averageGrades),
                         stud.isPassing(stud.getStudentId()));
 
-
                 int totalSubjects = gradeManager.getRegisteredSubjects(stud.getStudentId());
                 if(stud.getStudentType().equals("Regular")) {
                     System.out.printf("%-15s | %-28s | %-35s %n", " ", "Enrolled Subjects: " +totalSubjects, "Passing Grade: " + stud.getPassingGrade() +"%");
                     System.out.println("---------------------------------------------------------------------------------------------------");
                 } else{
                     if(gradeManager.calculateOverallAverage(stud.getStudentId()) >= 85){
-                        HonorsStudent honorsStudent = new HonorsStudent();
-                        honorsStudent.setHonorsEligible(true);
-                        if(honorsStudent.isHonorsEligible()){
-                            System.out.printf("%-15s | %-28s | %-28s  | %-25s %n", " ", "Enrolled Subjects: "  +totalSubjects, "Passing Grade: " + stud.getPassingGrade() + "%", "Honors Eligible");
-                            System.out.println("---------------------------------------------------------------------------------------------------");
-
-                        }
+                        System.out.printf("%-15s | %-28s | %-28s  | %-25s %n", " ", "Enrolled Subjects: "  +totalSubjects, "Passing Grade: " + stud.getPassingGrade() + "%", "Honors Eligible");
+                        System.out.println("---------------------------------------------------------------------------------------------------");
                     }
                     else {
                         System.out.printf("%-15s | %-28s | %-28s  | %-25s %n", " ", "Enrolled Subjects: "  +totalSubjects, "Passing Grade: " + stud.getPassingGrade() +"%", "Not Honors Eligible");
                         System.out.println("---------------------------------------------------------------------------------------------------");
-
                     }
                 }
-                studentCount++;
+                displayCount++;
             }
-
         }
 
-        System.out.println("\nTotal Students: " +studentCount);
-        System.out.printf("Average Class Grade: %.1f %% ",getAverageClassGrade());
+        System.out.println("\nTotal Students: " + displayCount);
+        System.out.printf("Average Class Grade: %.1f %% ", getAverageClassGrade());
         System.out.println();
         System.out.println("\nPress enter to continue");
         scanner.nextLine();
-
     }
-
 
     public double getAverageClassGrade() {
         double total = 0;
@@ -269,10 +256,45 @@ public class StudentManager {
         }
 
         if (countedStudents == 0) return 0;
-
         return total / countedStudents;
     }
 
+    public void exportStudentReport() {
+        System.out.println("EXPORT STUDENT REPORT");
+        System.out.println("__________________________");
+        System.out.print("Enter Student ID: ");
+        String id = scanner.nextLine().trim();
+
+        Student student = findStudent(id);
+        if (student == null) {
+            System.out.println("Student with ID " + id + " not found!");
+            System.out.println("Press Enter to continue...");
+            scanner.nextLine();
+            return;
+        }
+
+        double averageGrade = gradeManager.calculateOverallAverage(id);
+        int subjectCount = gradeManager.getRegisteredSubjects(id);
+
+        FileExporter.exportStudentToFile(student, averageGrade, subjectCount);
+
+        System.out.println("Press Enter to continue...");
+        scanner.nextLine();
+    }
+
+    public void exportAllStudentsReport() {
+        if (studentCount == 0) {
+            System.out.println("No students available to export!");
+            System.out.println("Press Enter to continue...");
+            scanner.nextLine();
+            return;
+        }
+
+        FileExporter.exportAllStudentsToFile(student, studentCount, getAverageClassGrade());
+
+        System.out.println("Press Enter to continue...");
+        scanner.nextLine();
+    }
 
     public int getStudentCount() {
         return studentCount;
@@ -282,4 +304,3 @@ public class StudentManager {
         this.gradeManager = gradeManager;
     }
 }
-

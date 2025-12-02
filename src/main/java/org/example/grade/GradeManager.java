@@ -1,5 +1,6 @@
 package org.example.grade;
 
+import org.example.newImprementations.FileExporter;
 import org.example.student.RegularStudent;
 import org.example.student.Student;
 import org.example.student.StudentManager;
@@ -7,7 +8,13 @@ import org.example.subject.CoreSubject;
 import org.example.subject.ElectiveSubject;
 import org.example.subject.Subject;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.InputMismatchException;
+import java.util.List;
 import java.util.Scanner;
 
 public class GradeManager {
@@ -15,8 +22,6 @@ public class GradeManager {
     private int gradeCount;
     private StudentManager studentManager;
     Scanner scanner = new Scanner(System.in);
-
-    //An array that holds all subjects and their codes as objects
 
     private Subject[] subject ={
             new CoreSubject("Mathematics", "MAT101"),
@@ -28,15 +33,13 @@ public class GradeManager {
     };
 
     public GradeManager(){
-
     }
+
     public GradeManager(StudentManager studentManager){
         this.studentManager = studentManager;
     }
 
     public void addGrade(Grade theGrade) {
-
-
         System.out.println("RECORD GRADE");
         System.out.println("__________________________");
         System.out.print("Enter Student ID: ");
@@ -51,9 +54,8 @@ public class GradeManager {
         System.out.println("Student Details:");
         System.out.println("Name: " + student.getName());
         System.out.println("Type: " + student.getStudentType());
-        System.out.printf("Current Average: %.1f%% " ,  calculateOverallAverage(id));
+        System.out.printf("Current Average: %.1f%% " , calculateOverallAverage(id));
         System.out.println();
-
 
         System.out.println("Subject Type:");
         System.out.println("1. Core Subject (Mathematics, English, Science)");
@@ -69,7 +71,6 @@ public class GradeManager {
             System.out.print("Invalid! Enter 1 or 2: ");
         }
 
-
         Subject[] filtered = new Subject[3];
         int fCount = 0;
 
@@ -82,12 +83,10 @@ public class GradeManager {
             }
         }
 
-
         System.out.println(choice == 1 ? "Available Core Subjects:" : "Available Elective Subjects:");
         for (int i = 0; i < fCount; i++) {
             System.out.println((i + 1) + ". " + filtered[i].getSubjectName());
         }
-
 
         System.out.print("Select Subject (1–" + fCount + "): ");
         int subjectChoice;
@@ -130,6 +129,12 @@ public class GradeManager {
             if (update.equalsIgnoreCase("Y")) {
                 existing.setGrade(gradeValue);
                 System.out.println("Grade updated successfully!");
+
+                // Update student file after grade update
+                double newAverage = calculateOverallAverage(id);
+                int totalSubjects = getRegisteredSubjects(id);
+                FileExporter.updateStudentGradeFile(student, existing, newAverage, totalSubjects);
+
             } else {
                 System.out.println("Update cancelled.");
             }
@@ -139,11 +144,8 @@ public class GradeManager {
             return;
         }
 
-
-
         theGrade = new Grade(student.getStudentId(), selectedSubject, gradeValue);
         theGrade.setGradeId(String.format("GRD%03d", gradeCount + 1));
-
 
         System.out.println("\nGRADE CONFIRMATION");
         System.out.println("_________________________________");
@@ -168,6 +170,12 @@ public class GradeManager {
             }
             grades[gradeCount++] = theGrade;
             System.out.println("Grade saved successfully!");
+
+            // Update student file after adding grade
+            double newAverage = calculateOverallAverage(id);
+            int totalSubjects = getRegisteredSubjects(id);
+            FileExporter.updateStudentGradeFile(student, theGrade, newAverage, totalSubjects);
+
             System.out.println("Press enter to continue.");
             scanner.nextLine();
         } else {
@@ -177,10 +185,7 @@ public class GradeManager {
         }
     }
 
-
-
     public void viewGradeByStudent(String studentId){
-
         System.out.println("VIEW GRADE");
         System.out.println("__________________________");
         System.out.print("Enter Student ID: ");
@@ -192,8 +197,6 @@ public class GradeManager {
             return;
         }
 
-
-
         int foundCount = 0;
         for (int i = 0; i < gradeCount; i++) {
             Grade g = grades[i];
@@ -203,7 +206,7 @@ public class GradeManager {
         }
 
         if (foundCount == 0) {
-            System.out.println("Student: " +student.getStudentId() + " - " + student.getName());
+            System.out.println("Student: " + student.getStudentId() + " - " + student.getName());
             System.out.println("Type: " + student.getStudentType());
 
             double passingRequirement = (student instanceof RegularStudent) ? 50 : 60;
@@ -217,7 +220,7 @@ public class GradeManager {
             return;
         }
 
-        System.out.println("Student: " +student.getStudentId() + " - " + student.getName());
+        System.out.println("Student: " + student.getStudentId() + " - " + student.getName());
         System.out.println("Type: " + student.getStudentType() + " Student");
 
         double passingRequirement = (student instanceof RegularStudent) ? 50 : 60;
@@ -268,10 +271,16 @@ public class GradeManager {
         }
 
         System.out.println("----------------------------------------------------------");
+        System.out.print("Export this report to file? (Y/N): ");
+        String exportChoice = scanner.nextLine().trim().toUpperCase();
+
+        if (exportChoice.equals("Y")) {
+            exportStudentGradeReport(id);
+        }
+
         System.out.println("Press Enter to continue...");
         scanner.nextLine();
     }
-
 
     public double calculateCoreAverage(String studentId){
         int countCore = 0;
@@ -281,11 +290,9 @@ public class GradeManager {
                 coreTotal += grades[i].getGrade();
                 countCore++;
             }
-
         }
 
         double averageCore = (countCore > 0) ? (double) coreTotal / countCore : 0;
-
         return averageCore;
     }
 
@@ -298,7 +305,6 @@ public class GradeManager {
                 electiveTotal += grades[i].getGrade();
                 electiveCount++;
             }
-
         }
 
         double averageElective = (electiveCount > 0) ? (double) electiveTotal / electiveCount : 0;
@@ -313,12 +319,10 @@ public class GradeManager {
                 totalGrades += grades[i].getGrade();
                 countGrades ++;
             }
-
         }
 
         double overallAverage = (countGrades > 0) ? (double) totalGrades/ countGrades : 0;
         return overallAverage;
-
     }
 
     public int getGradeCount(){
@@ -332,7 +336,6 @@ public class GradeManager {
         for (int i = 0; i < gradeCount; i++) {
             Grade g = grades[i];
             if (g != null && g.getStudentId().equals(studentId)) {
-
                 String code = g.getSubject().getSubjectCode();
 
                 boolean exists = false;
@@ -358,17 +361,220 @@ public class GradeManager {
             if (g != null &&
                     g.getStudentId().equals(studentId) &&
                     g.getSubject().getSubjectCode().equals(subjectCode)) {
-
                 return g;
             }
         }
         return null;
     }
 
+    public void exportGradeReport() {
+        System.out.println("EXPORT GRADE REPORT");
+        System.out.println("__________________________");
 
+        System.out.print("Enter Student ID: ");
+        String id = scanner.nextLine().trim();
 
+        Student student = studentManager.findStudent(id);
+        if (student == null) {
+            System.out.println("Student with ID " + id + " not found!");
+            System.out.println("Press Enter to continue...");
+            scanner.nextLine();
+            return;
+        }
 
+        System.out.println("\nStudent Details:");
+        System.out.println("ID: " + student.getStudentId());
+        System.out.println("Name: " + student.getName());
+        System.out.println("Type: " + student.getStudentType());
 
+        // Collect grades for this student
+        List<Grade> studentGrades = new ArrayList<>();
+        int totalGrades = 0;
+        double totalScore = 0;
+
+        for (int i = 0; i < gradeCount; i++) {
+            Grade g = grades[i];
+            if (g != null && g.getStudentId().equals(id)) {
+                studentGrades.add(g);
+                totalGrades++;
+                totalScore += g.getGrade();
+            }
+        }
+
+        if (studentGrades.isEmpty()) {
+            System.out.println("No grades found for this student.");
+            System.out.println("Press Enter to continue...");
+            scanner.nextLine();
+            return;
+        }
+
+        double average = totalScore / totalGrades;
+
+        System.out.println("Export options:");
+        System.out.println("1. Summary Report (Overview Only)");
+        System.out.println("2. Detailed Report (All grades)");
+        System.out.println("3. Both");
+
+        System.out.print("\nEnter choice (1-3): ");
+        int choice;
+        while (true) {
+            try {
+                choice = Integer.parseInt(scanner.nextLine());
+                if (choice >= 1 && choice <= 3) break;
+                else System.out.print("Invalid! Enter 1, 2, or 3: ");
+            } catch (Exception ignored) {
+                System.out.print("Invalid! Enter a number (1-3): ");
+            }
+        }
+
+        System.out.print("\nEnter file name without extension: ");
+        String baseFileName = scanner.nextLine().trim();
+
+        // Generate student-specific filename
+        String studentFileName = student.getName().toLowerCase()
+                .replace(" ", "_")
+                .replaceAll("[^a-z_]", "") + "_report";
+
+        // Export based on choice
+        List<File> exportedFiles = new ArrayList<>();
+
+        if (choice == 1 || choice == 3) {
+            File summaryFile = FileExporter.exportStudentToFile(
+                    student,
+                    average,
+                    studentGrades.size(),
+                    baseFileName + "_summary",
+                    false
+            );
+            if (summaryFile != null) {
+                exportedFiles.add(summaryFile);
+            }
+        }
+
+        if (choice == 2 || choice == 3) {
+            File detailedFile = FileExporter.exportStudentToFile(
+                    student,
+                    average,
+                    studentGrades.size(),
+                    baseFileName + "_detailed",
+                    true
+            );
+            if (detailedFile != null) {
+                exportedFiles.add(detailedFile);
+            }
+        }
+
+        // Display file information
+        if (!exportedFiles.isEmpty()) {
+            System.out.println("\n" + "=".repeat(60));
+            System.out.println("EXPORT COMPLETED SUCCESSFULLY!");
+            System.out.println("=".repeat(60));
+
+            for (File file : exportedFiles) {
+                System.out.println("\n📁 File Information:");
+                System.out.println("   File: " + file.getName());
+                System.out.println("   Size: " + file.length() + " bytes");
+                System.out.println("   Location: " + file.getAbsolutePath());
+
+                // Read and display what the file contains
+                try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+                    System.out.println("   Contains:");
+                    String line;
+                    int lineCount = 0;
+                    while ((line = reader.readLine()) != null && lineCount < 8) {
+                        if (line.trim().isEmpty()) continue;
+                        System.out.println("     • " + line.trim());
+                        lineCount++;
+                    }
+                    if (lineCount == 8) {
+                        System.out.println("     • ... (more content truncated)");
+                    }
+                } catch (IOException e) {
+                    System.out.println("   Could not read file contents for preview.");
+                }
+            }
+
+            // Also save to the student-specific file format
+            File studentSpecificFile = FileExporter.exportStudentToFile(
+                    student,
+                    average,
+                    studentGrades.size(),
+                    studentFileName,
+                    true
+            );
+
+            if (studentSpecificFile != null) {
+                System.out.println("\n📝 Also saved to student-specific file:");
+                System.out.println("   File: " + studentSpecificFile.getName());
+                System.out.println("   This file will be updated with future grades.");
+            }
+        } else {
+            System.out.println("No files were exported.");
+        }
+
+        System.out.println("\nPress Enter to continue...");
+        scanner.nextLine();
+    }
+
+    public void exportAllGradesToCSV() {
+        System.out.println("EXPORT ALL GRADES TO CSV");
+        System.out.println("__________________________");
+
+        if (gradeCount == 0) {
+            System.out.println("No grades available to export!");
+            System.out.println("Press Enter to continue...");
+            scanner.nextLine();
+            return;
+        }
+
+        // Get student data from studentManager
+        Student[] students = new Student[0];
+        int studentCount = 0;
+
+        try {
+            java.lang.reflect.Field studentField = StudentManager.class.getDeclaredField("student");
+            studentField.setAccessible(true);
+            students = (Student[]) studentField.get(studentManager);
+
+            java.lang.reflect.Field studentCountField = StudentManager.class.getDeclaredField("studentCount");
+            studentCountField.setAccessible(true);
+            studentCount = (int) studentCountField.get(studentManager);
+        } catch (Exception e) {
+            System.out.println("Error accessing student data: " + e.getMessage());
+        }
+
+        FileExporter.exportAllGradesToCSV(grades, gradeCount, students, studentCount);
+
+        System.out.println("Press Enter to continue...");
+        scanner.nextLine();
+    }
+
+    public void exportStudentGradeReport(String studentId) {
+        Student student = studentManager.findStudent(studentId);
+        if (student == null) {
+            System.out.println("Student not found!");
+            return;
+        }
+
+        double averageGrade = calculateOverallAverage(studentId);
+        int subjectCount = getRegisteredSubjects(studentId);
+
+        String studentFileName = student.getName().toLowerCase()
+                .replace(" ", "_")
+                .replaceAll("[^a-z_]", "") + "_report";
+
+        File exported = FileExporter.exportStudentToFile(
+                student,
+                averageGrade,
+                subjectCount,
+                studentFileName,
+                true
+        );
+
+        if (exported != null) {
+            System.out.println("Student report exported: " + exported.getAbsolutePath());
+        } else {
+            System.out.println("Failed to export student report.");
+        }
+    }
 }
-
-

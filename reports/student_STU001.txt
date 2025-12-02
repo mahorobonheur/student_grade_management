@@ -1,0 +1,24 @@
+============================================================
+STUDENT ACADEMIC REPORT
+============================================================
+Generated on: 2025-12-01 17:00:29
+
+STUDENT INFORMATION
+----------------------------------------
+Student ID: STU001
+Name: Mahoro Bonheur
+Type: Regular Student
+Age: 12
+Email: mahoro@gmail.com
+Phone: 0782817801
+Status: Active
+Passing Requirement: 50%
+
+ACADEMIC SUMMARY
+----------------------------------------
+Enrolled Subjects: 0
+Current Average: 0.0%
+Overall Status: FAILING ❌
+
+============================================================
+End of Report
