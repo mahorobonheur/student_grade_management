@@ -1,6 +1,7 @@
 package org.example.grade;
 
 import org.example.newImprementations.FileExporter;
+import org.example.newImprementations.GPACalculator;
 import org.example.student.RegularStudent;
 import org.example.student.Student;
 import org.example.student.StudentManager;
@@ -12,10 +13,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.InputMismatchException;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class GradeManager {
     private Grade[] grades = new Grade[200];
@@ -130,7 +128,6 @@ public class GradeManager {
                 existing.setGrade(gradeValue);
                 System.out.println("Grade updated successfully!");
 
-                // Update student file after grade update
                 double newAverage = calculateOverallAverage(id);
                 int totalSubjects = getRegisteredSubjects(id);
                 FileExporter.updateStudentGradeFile(student, existing, newAverage, totalSubjects);
@@ -171,7 +168,6 @@ public class GradeManager {
             grades[gradeCount++] = theGrade;
             System.out.println("Grade saved successfully!");
 
-            // Update student file after adding grade
             double newAverage = calculateOverallAverage(id);
             int totalSubjects = getRegisteredSubjects(id);
             FileExporter.updateStudentGradeFile(student, theGrade, newAverage, totalSubjects);
@@ -285,7 +281,7 @@ public class GradeManager {
     public double calculateCoreAverage(String studentId){
         int countCore = 0;
         int coreTotal = 0;
-        for(int i = 0; i < grades.length; i++){
+        for(int i = 0; i < gradeCount; i++){
             if(grades[i] != null && grades[i].getStudentId().equals(studentId) && grades[i].getSubject().getSubjectType().equals("Core")){
                 coreTotal += grades[i].getGrade();
                 countCore++;
@@ -300,7 +296,7 @@ public class GradeManager {
         int electiveCount = 0;
         int electiveTotal = 0;
 
-        for(int i = 0; i < grades.length; i++){
+        for(int i = 0; i < gradeCount; i++){
             if(grades[i] != null && grades[i].getStudentId().equals(studentId) && grades[i].getSubject().getSubjectType().equals("Elective")){
                 electiveTotal += grades[i].getGrade();
                 electiveCount++;
@@ -314,7 +310,7 @@ public class GradeManager {
     public double calculateOverallAverage(String studentId){
         int totalGrades = 0;
         int countGrades = 0;
-        for(int i = 0; i < grades.length; i++){
+        for(int i = 0; i < gradeCount; i++){
             if(grades[i] != null && grades[i].getStudentId().equals(studentId)){
                 totalGrades += grades[i].getGrade();
                 countGrades ++;
@@ -387,7 +383,6 @@ public class GradeManager {
         System.out.println("Name: " + student.getName());
         System.out.println("Type: " + student.getStudentType());
 
-        // Collect grades for this student
         List<Grade> studentGrades = new ArrayList<>();
         int totalGrades = 0;
         double totalScore = 0;
@@ -430,12 +425,10 @@ public class GradeManager {
         System.out.print("\nEnter file name without extension: ");
         String baseFileName = scanner.nextLine().trim();
 
-        // Generate student-specific filename
         String studentFileName = student.getName().toLowerCase()
                 .replace(" ", "_")
                 .replaceAll("[^a-z_]", "") + "_report";
 
-        // Export based on choice
         List<File> exportedFiles = new ArrayList<>();
 
         if (choice == 1 || choice == 3) {
@@ -464,7 +457,6 @@ public class GradeManager {
             }
         }
 
-        // Display file information
         if (!exportedFiles.isEmpty()) {
             System.out.println("\n" + "=".repeat(60));
             System.out.println("EXPORT COMPLETED SUCCESSFULLY!");
@@ -476,7 +468,6 @@ public class GradeManager {
                 System.out.println("   Size: " + file.length() + " bytes");
                 System.out.println("   Location: " + file.getAbsolutePath());
 
-                // Read and display what the file contains
                 try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
                     System.out.println("   Contains:");
                     String line;
@@ -494,7 +485,6 @@ public class GradeManager {
                 }
             }
 
-            // Also save to the student-specific file format
             File studentSpecificFile = FileExporter.exportStudentToFile(
                     student,
                     average,
@@ -527,7 +517,6 @@ public class GradeManager {
             return;
         }
 
-        // Get student data from studentManager
         Student[] students = new Student[0];
         int studentCount = 0;
 
@@ -575,6 +564,170 @@ public class GradeManager {
             System.out.println("Student report exported: " + exported.getAbsolutePath());
         } else {
             System.out.println("Failed to export student report.");
+        }
+    }
+
+    public void calculateStudentGPA() {
+        System.out.println("\nCALCULATE STUDENT GPA");
+        System.out.println("__________________________");
+        System.out.print("Enter Student ID: ");
+        String id = scanner.nextLine();
+
+        Student student = studentManager.findStudent(id);
+        if (student == null) {
+            System.out.println("Student not found!");
+            System.out.println("Press Enter to continue...");
+            scanner.nextLine();
+            return;
+        }
+
+        List<Grade> grades = getGradesByStudentId(id);
+        if (grades.isEmpty()) {
+            System.out.println("This student has no recorded grades.");
+            System.out.println("Press Enter to continue...");
+            scanner.nextLine();
+            return;
+        }
+
+
+        System.out.println("\n=============================================");
+        System.out.println("   GPA REPORT FOR " + student.getStudentId());
+        System.out.println("=============================================");
+        System.out.println("Student: " + student.getStudentId() + " - " + student.getName());
+        System.out.println("Type: " + student.getStudentType());
+        System.out.println("Overall Average: " + String.format("%.2f", calculateOverallAverage(id)) + "%");
+        System.out.println();
+
+        System.out.println("GPA Calculation (4.0 Scale)");
+        System.out.println("------------------------------------------------------------");
+        System.out.printf("%-25s %-12s %-10s %-10s\n", "COURSE", "PERCENTAGE", "GPA", "LETTER");
+        System.out.println("------------------------------------------------------------");
+
+        double totalGPA = 0;
+        for (Grade g : grades) {
+            double percentage = g.getGrade();
+            double courseGPA = GPACalculator.percentageToGPA(percentage);
+            String letter = GPACalculator.gpaToLetter(courseGPA);
+            totalGPA += courseGPA;
+
+            System.out.printf("%-25s %-12.2f %-10.2f %-10s\n",
+                    g.getSubject().getSubjectName(),
+                    percentage,
+                    courseGPA,
+                    letter);
+        }
+
+        System.out.println("----------------------------------------------------------------");
+
+        double cumulativeGPA = totalGPA / grades.size();
+        String cumulativeLetter = GPACalculator.gpaToLetter(cumulativeGPA);
+
+        int rank = calculateClassRank(id);
+
+        double classAverage = studentManager.getAverageClassGrade();
+        double classGPA = GPACalculator.percentageToGPA(classAverage);
+
+        System.out.println("\nCumulative GPA: " + String.format("%.2f", cumulativeGPA) + " / 4.0");
+        System.out.println("Letter Grade: " + cumulativeLetter);
+        if (rank > 0) {
+            System.out.println("Class Rank: " + rank + " of " + studentManager.getStudentCount());
+        }
+        System.out.println();
+
+        System.out.println("Performance Analysis:");
+
+        if (student.getStudentType().equals("Honors")) {
+            if (cumulativeGPA >= 3.5) {
+                System.out.println("✓ Honors Eligibility: MAINTAINED");
+            } else {
+                System.out.println("⚠ Honors Eligibility: AT RISK");
+                System.out.println("  Current GPA: " + String.format("%.2f", cumulativeGPA) + " | Required: 3.50");
+            }
+        }
+
+        if (cumulativeGPA >= 3.7) {
+            System.out.println("✓ Excellent Performance" + String.format("%.2f", cumulativeGPA) + " GPA");
+        } else if (cumulativeGPA >= 3.3) {
+            System.out.println("✓ Very Good Performance" + String.format("%.2f", cumulativeGPA) + " GPA");
+        } else if (cumulativeGPA >= 3.0) {
+            System.out.println("✓ Good Performance" + String.format("%.2f", cumulativeGPA) + " GPA");
+        } else if (cumulativeGPA >= 2.0) {
+            System.out.println("✓ Satisfactory Performance" + String.format("%.2f", cumulativeGPA) + " GPA");
+        } else {
+            System.out.println("⚠ Needs Improvement" + String.format("%.2f", cumulativeGPA) + " GPA");
+        }
+
+        if (cumulativeGPA > classGPA + 0.5) {
+            System.out.println("✓ Significantly Above Class Average" + String.format("%.2f", cumulativeGPA) + " GPA");
+        } else if (cumulativeGPA > classGPA + 0.2) {
+            System.out.println("✓ Above Class Average" + String.format("%.2f", cumulativeGPA) + " GPA");
+        } else if (cumulativeGPA >= classGPA - 0.2) {
+            System.out.println("✓ At Class Average Level" + String.format("%.2f", cumulativeGPA) + " GPA");
+        } else {
+            System.out.println("⚠ Below Class Average" + String.format("%.2f", cumulativeGPA) + " GPA");
+        }
+        System.out.println("  Your GPA: " + String.format("%.2f", cumulativeGPA) +
+                " | Class Avg GPA: " + String.format("%.2f", classGPA));
+
+        System.out.println("\nPress Enter to continue...");
+        scanner.nextLine();
+    }
+
+
+    private List<Grade> getGradesByStudentId(String studentId) {
+        List<Grade> studentGrades = new ArrayList<>();
+        for (int i = 0; i < gradeCount; i++) {
+            Grade g = grades[i];
+            if (g != null && g.getStudentId().equals(studentId)) {
+                studentGrades.add(g);
+            }
+        }
+        return studentGrades;
+    }
+
+
+    private int calculateClassRank(String studentId) {
+        try {
+
+            java.lang.reflect.Field studentField = StudentManager.class.getDeclaredField("student");
+            studentField.setAccessible(true);
+            Student[] students = (Student[]) studentField.get(studentManager);
+
+            java.lang.reflect.Field studentCountField = StudentManager.class.getDeclaredField("studentCount");
+            studentCountField.setAccessible(true);
+            int totalStudents = (int) studentCountField.get(studentManager);
+
+            List<StudentAverage> studentAverages = new ArrayList<>();
+            for (int i = 0; i < totalStudents; i++) {
+                Student s = students[i];
+                if (s != null) {
+                    double avg = calculateOverallAverage(s.getStudentId());
+                    studentAverages.add(new StudentAverage(s.getStudentId(), avg));
+                }
+            }
+
+
+            studentAverages.sort((a, b) -> Double.compare(b.average, a.average));
+
+            for (int i = 0; i < studentAverages.size(); i++) {
+                if (studentAverages.get(i).studentId.equals(studentId)) {
+                    return i + 1;
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("Unable to calculate rank");
+        }
+        return -1;
+    }
+
+
+    private static class StudentAverage {
+        String studentId;
+        double average;
+
+        StudentAverage(String studentId, double average) {
+            this.studentId = studentId;
+            this.average = average;
         }
     }
 }

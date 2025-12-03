@@ -1,0 +1,30 @@
+============================================================
+STUDENT ACADEMIC REPORT
+============================================================
+Generated on: 2025-12-03 11:38:32
+
+STUDENT INFORMATION
+----------------------------------------
+Student ID: STU001
+Name: Jay
+Type: Regular Student
+Age: 23
+Email: ma@gmai.com
+Phone: 0782817801
+Status: Active
+Passing Requirement: 50%
+
+ACADEMIC SUMMARY
+----------------------------------------
+Enrolled Subjects: 4
+Current Average: 88.5%
+Overall Status: PASSING ✅
+
+GRADE DETAILS
+----------------------------------------
+Individual grades are recorded in the student's grade history.
+Total grades recorded: 4
+Average calculated from all recorded grades.
+
+============================================================
+End of Report

@@ -120,4 +120,23 @@ public abstract class Student {
     public void setStudentManager(StudentManager studentManager) {
         this.studentManager = studentManager;
     }
+
+    public double calculateGPA() {
+        return 0.0;
+    }
+
+    public String getLetterGrade() {
+        double average = calculateAverageGrade();
+        if (average >= 93) return "A";
+        else if (average >= 90) return "A-";
+        else if (average >= 87) return "B+";
+        else if (average >= 83) return "B";
+        else if (average >= 80) return "B-";
+        else if (average >= 77) return "C+";
+        else if (average >= 73) return "C";
+        else if (average >= 70) return "C-";
+        else if (average >= 67) return "D+";
+        else if (average >= 60) return "D";
+        else return "F";
+    }
 }

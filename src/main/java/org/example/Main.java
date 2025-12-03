@@ -70,7 +70,7 @@ public class Main {
                     gradeManager.exportGradeReport();
                     break;
                 case 6:
-                    System.out.println("Calculate Student GPA");
+                    gradeManager.calculateStudentGPA();
                     break;
                 case 7:
                     studentManager.exportAllStudentsReport();

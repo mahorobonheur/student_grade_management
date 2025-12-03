@@ -1,0 +1,30 @@
+============================================================
+STUDENT ACADEMIC REPORT
+============================================================
+Generated on: 2025-12-03 11:36:14
+
+STUDENT INFORMATION
+----------------------------------------
+Student ID: STU002
+Name: mahl
+Type: Honors Student
+Age: 23
+Email: mahl@gmail.com
+Phone: 0782817801
+Status: Active
+Passing Requirement: 60%
+
+ACADEMIC SUMMARY
+----------------------------------------
+Enrolled Subjects: 3
+Current Average: 95.0%
+Overall Status: PASSING ✅
+
+GRADE DETAILS
+----------------------------------------
+Individual grades are recorded in the student's grade history.
+Total grades recorded: 3
+Average calculated from all recorded grades.
+
+============================================================
+End of Report
