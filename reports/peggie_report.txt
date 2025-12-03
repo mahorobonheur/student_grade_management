@@ -1,15 +1,15 @@
 ============================================================
 STUDENT ACADEMIC REPORT
 ============================================================
-Generated on: 2025-12-01 17:00:29
+Generated on: 2025-12-03 12:56:28
 
 STUDENT INFORMATION
 ----------------------------------------
-Student ID: STU001
-Name: Mahoro Bonheur
+Student ID: STU002
+Name: Peggie
 Type: Regular Student
-Age: 12
-Email: mahoro@gmail.com
+Age: 23
+Email: mah@gmail.com
 Phone: 0782817801
 Status: Active
 Passing Requirement: 50%
@@ -20,5 +20,17 @@ Enrolled Subjects: 0
 Current Average: 0.0%
 Overall Status: FAILING ❌
 
+GRADE DETAILS
+----------------------------------------
+Individual grades are recorded in the student's grade history.
+Total grades recorded: 0
+Average calculated from all recorded grades.
+
 ============================================================
 End of Report
+
+Grade Update on: 2025-12-03 12:56:45
+New Grade Added: Science - 99.0%
+Updated Average: 99.0%
+Total Subjects: 1
+----------------------------------------

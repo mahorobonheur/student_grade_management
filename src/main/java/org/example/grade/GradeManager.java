@@ -2,6 +2,7 @@ package org.example.grade;
 
 import org.example.newImprementations.FileExporter;
 import org.example.newImprementations.GPACalculator;
+import org.example.service.BulkImportService;
 import org.example.student.RegularStudent;
 import org.example.student.Student;
 import org.example.student.StudentManager;
@@ -19,6 +20,8 @@ public class GradeManager {
     private Grade[] grades = new Grade[200];
     private int gradeCount;
     private StudentManager studentManager;
+    private BulkImportService bulkImportService = new BulkImportService();
+
     Scanner scanner = new Scanner(System.in);
 
     private Subject[] subject ={
@@ -171,6 +174,7 @@ public class GradeManager {
             double newAverage = calculateOverallAverage(id);
             int totalSubjects = getRegisteredSubjects(id);
             FileExporter.updateStudentGradeFile(student, theGrade, newAverage, totalSubjects);
+            bulkImportService.saveOrUpdateGradeCSV(student, theGrade);
 
             System.out.println("Press enter to continue.");
             scanner.nextLine();
@@ -730,4 +734,152 @@ public class GradeManager {
             this.average = average;
         }
     }
+
+    public void bulkImportGrades() {
+        System.out.println("BULK IMPORT GRADES");
+        System.out.println("---------------------------------------");
+
+        String importDir = "./imports/";
+        System.out.println("Place your CSV file in: " + importDir);
+        System.out.println();
+        System.out.println("CSV Format Required:");
+        System.out.println("StudentID,SubjectName,SubjectType,Grade");
+        System.out.println("Example: STU001,Mathematics,Core,85");
+        System.out.println();
+
+        System.out.print("Enter filename (without extension): ");
+        String filename = scanner.nextLine().trim();
+
+        File file = new File(importDir + filename + ".csv");
+
+        if (!file.exists()) {
+            System.out.println("❌ File not found: " + file.getAbsolutePath());
+            System.out.println("Press Enter to continue...");
+            scanner.nextLine();
+            return;
+        }
+
+        System.out.println("\nValidating file... ✓");
+        System.out.println("Processing grades...\n");
+
+        int totalRows = 0;
+        int successCount = 0;
+        int failCount = 0;
+
+        List<String> failedRows = new ArrayList<>();
+        List<String> logLines = new ArrayList<>();
+
+        String logFileName = "import_log_" +
+                java.time.LocalDate.now().toString().replace("-", "") + ".txt";
+
+        File logFile = new File(logFileName);
+
+        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+
+                if (line.trim().isEmpty()) continue;
+
+                totalRows++;
+
+                String[] parts = line.split(",");
+                if (parts.length != 4) {
+                    failCount++;
+                    failedRows.add("Row " + totalRows + ": Invalid format");
+                    logLines.add("Row " + totalRows + " FAILED - Invalid format");
+                    continue;
+                }
+
+                String studentId = parts[0].trim();
+                String subjectName = parts[1].trim();
+                String subjectType = parts[2].trim();
+                String gradeStr = parts[3].trim();
+
+                Student student = studentManager.findStudent(studentId);
+                if (student == null) {
+                    failCount++;
+                    failedRows.add("Row " + totalRows + ": Invalid student ID (" + studentId + ")");
+                    logLines.add("Row " + totalRows + " FAILED - Student not found: " + studentId);
+                    continue;
+                }
+
+                Subject selectedSubject = null;
+                for (Subject s : subject) {
+                    if (s.getSubjectName().equalsIgnoreCase(subjectName)
+                            && s.getSubjectType().equalsIgnoreCase(subjectType)) {
+                        selectedSubject = s;
+                        break;
+                    }
+                }
+
+                if (selectedSubject == null) {
+                    failCount++;
+                    failedRows.add("Row " + totalRows + ": Invalid subject or type (" + subjectName + ")");
+                    logLines.add("Row " + totalRows + " FAILED - Subject invalid: " + subjectName);
+                    continue;
+                }
+
+                double gradeValue;
+                try {
+                    gradeValue = Double.parseDouble(gradeStr);
+                    if (gradeValue < 0 || gradeValue > 100) {
+                        failCount++;
+                        failedRows.add("Row " + totalRows + ": Grade out of range (" + gradeStr + ")");
+                        logLines.add("Row " + totalRows + " FAILED - Grade out of range: " + gradeStr);
+                        continue;
+                    }
+                } catch (Exception e) {
+                    failCount++;
+                    failedRows.add("Row " + totalRows + ": Invalid grade (" + gradeStr + ")");
+                    logLines.add("Row " + totalRows + " FAILED - Invalid grade: " + gradeStr);
+                    continue;
+                }
+
+                Grade existing = findExistingGrade(studentId, selectedSubject.getSubjectCode());
+
+                if (existing != null) {
+                    existing.setGrade(gradeValue);
+                    bulkImportService.saveOrUpdateGradeCSV(student, existing);
+                    logLines.add("Row " + totalRows + " UPDATED - " + studentId + " " + subjectName);
+                } else {
+                    Grade g = new Grade(studentId, selectedSubject, gradeValue);
+                    g.setGradeId(String.format("GRD%03d", gradeCount + 1));
+                    grades[gradeCount++] = g;
+                    bulkImportService.saveOrUpdateGradeCSV(student, g);
+                    logLines.add("Row " + totalRows + " SUCCESS - " + studentId + " " + subjectName);
+                }
+
+
+                successCount++;
+            }
+
+
+            java.nio.file.Files.write(logFile.toPath(), logLines);
+
+        } catch (IOException e) {
+            System.out.println("❌ Error reading file: " + e.getMessage());
+            return;
+        }
+
+        System.out.println("IMPORT SUMMARY");
+        System.out.println("---------------------------------------");
+        System.out.println("Total Rows: " + totalRows);
+        System.out.println("Successfully Imported: " + successCount);
+        System.out.println("Failed: " + failCount);
+
+        if (!failedRows.isEmpty()) {
+            System.out.println("\nFailed Records:");
+            for (String err : failedRows) {
+                System.out.println(err);
+            }
+        }
+
+        System.out.println("\n✓ Import completed!");
+        System.out.println("   " + successCount + " grades added to system");
+        System.out.println("   See " + logFileName + " for details");
+
+        System.out.println("\nPress Enter to continue...");
+        scanner.nextLine();
+    }
+
 }

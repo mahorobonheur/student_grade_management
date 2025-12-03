@@ -1,6 +1,7 @@
 package org.example;
 
 import org.example.grade.GradeManager;
+import org.example.service.BulkImportService;
 import org.example.student.StudentManager;
 
 import java.util.InputMismatchException;
@@ -17,6 +18,8 @@ public class Main {
         StudentManager studentManager = new StudentManager();
         GradeManager gradeManager = new GradeManager(studentManager);
         studentManager.setGradeManager(gradeManager);
+        BulkImportService bulkImportService = new BulkImportService();
+
 
         do{
 
@@ -73,7 +76,7 @@ public class Main {
                     gradeManager.calculateStudentGPA();
                     break;
                 case 7:
-                    studentManager.exportAllStudentsReport();
+                    gradeManager.bulkImportGrades();
                     break;
                 case 8:
                     System.out.println("View Class Statistics");

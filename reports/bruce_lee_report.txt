@@ -1,30 +1,42 @@
 ============================================================
 STUDENT ACADEMIC REPORT
 ============================================================
-Generated on: 2025-12-03 11:36:14
+Generated on: 2025-12-03 12:57:05
 
 STUDENT INFORMATION
 ----------------------------------------
-Student ID: STU002
-Name: mahl
+Student ID: STU003
+Name: Bruce lee
 Type: Honors Student
-Age: 23
-Email: mahl@gmail.com
+Age: 44
+Email: mahro@gmail.com
 Phone: 0782817801
 Status: Active
 Passing Requirement: 60%
 
 ACADEMIC SUMMARY
 ----------------------------------------
-Enrolled Subjects: 3
-Current Average: 95.0%
-Overall Status: PASSING ✅
+Enrolled Subjects: 0
+Current Average: 0.0%
+Overall Status: FAILING ❌
 
 GRADE DETAILS
 ----------------------------------------
 Individual grades are recorded in the student's grade history.
-Total grades recorded: 3
+Total grades recorded: 0
 Average calculated from all recorded grades.
 
 ============================================================
 End of Report
+
+Grade Update on: 2025-12-03 12:57:31
+New Grade Added: Mathematics - 99.0%
+Updated Average: 99.0%
+Total Subjects: 1
+----------------------------------------
+
+Grade Update on: 2025-12-03 12:57:50
+New Grade Added: Music - 99.0%
+Updated Average: 99.0%
+Total Subjects: 2
+----------------------------------------

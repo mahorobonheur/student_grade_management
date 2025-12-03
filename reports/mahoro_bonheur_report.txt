@@ -1,30 +1,42 @@
 ============================================================
 STUDENT ACADEMIC REPORT
 ============================================================
-Generated on: 2025-12-03 11:36:35
+Generated on: 2025-12-03 12:54:58
 
 STUDENT INFORMATION
 ----------------------------------------
 Student ID: STU001
-Name: Jay
+Name: Mahoro Bonheur
 Type: Regular Student
-Age: 23
-Email: ma@gmai.com
+Age: 12
+Email: mh@gmail.com
 Phone: 0782817801
 Status: Active
 Passing Requirement: 50%
 
 ACADEMIC SUMMARY
 ----------------------------------------
-Enrolled Subjects: 3
-Current Average: 88.7%
-Overall Status: PASSING ✅
+Enrolled Subjects: 0
+Current Average: 0.0%
+Overall Status: FAILING ❌
 
 GRADE DETAILS
 ----------------------------------------
 Individual grades are recorded in the student's grade history.
-Total grades recorded: 3
+Total grades recorded: 0
 Average calculated from all recorded grades.
 
 ============================================================
 End of Report
+
+Grade Update on: 2025-12-03 12:55:32
+New Grade Added: Mathematics - 90.0%
+Updated Average: 90.0%
+Total Subjects: 1
+----------------------------------------
+
+Grade Update on: 2025-12-03 12:55:47
+New Grade Added: English - 88.0%
+Updated Average: 89.0%
+Total Subjects: 2
+----------------------------------------
