@@ -79,10 +79,10 @@ public class Main {
                     gradeManager.bulkImportGrades();
                     break;
                 case 8:
-                    System.out.println("View Class Statistics");
+                    gradeManager.viewClassStatistics();
                     break;
                 case 9:
-                    System.out.println("Search Students");
+                    gradeManager.searchStudents();
                     break;
                 case 10:
                     System.out.println("Thank you for using Student Grade Management System! \nGoodbye!");

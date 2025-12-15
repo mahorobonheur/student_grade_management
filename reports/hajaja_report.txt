@@ -1,15 +1,15 @@
 ============================================================
 STUDENT ACADEMIC REPORT
 ============================================================
-Generated on: 2025-12-03 12:57:05
+Generated on: 2025-12-03 16:49:03
 
 STUDENT INFORMATION
 ----------------------------------------
-Student ID: STU003
-Name: Bruce lee
+Student ID: STU004
+Name: Hajaja
 Type: Honors Student
-Age: 44
-Email: mahro@gmail.com
+Age: 12
+Email: mah@gmail.com
 Phone: 0782817801
 Status: Active
 Passing Requirement: 60%
@@ -28,21 +28,3 @@ Average calculated from all recorded grades.
 
 ============================================================
 End of Report
-
-Grade Update on: 2025-12-03 12:57:31
-New Grade Added: Mathematics - 99.0%
-Updated Average: 99.0%
-Total Subjects: 1
-----------------------------------------
-
-Grade Update on: 2025-12-03 12:57:50
-New Grade Added: Music - 99.0%
-Updated Average: 99.0%
-Total Subjects: 2
-----------------------------------------
-
-Grade Update on: 2025-12-03 13:03:27
-New Grade Added: Mathematics - 89.0%
-Updated Average: 94.0%
-Total Subjects: 2
-----------------------------------------

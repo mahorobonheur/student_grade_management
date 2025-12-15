@@ -6,8 +6,7 @@ package org.example.student;
 public class HonorsStudent extends Student{
     private double passingGrade = 60;
     private boolean honorsEligible = false;
-
-    public HonorsStudent(){}
+    
     public HonorsStudent(String name, int age, String email, String phone) {
         super(name, age, email, phone);
     }

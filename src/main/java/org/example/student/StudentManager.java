@@ -3,7 +3,6 @@ package org.example.student;
 import org.example.grade.GradeManager;
 import org.example.newImprementations.FileExporter;
 
-import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class StudentManager {
@@ -298,6 +297,14 @@ public class StudentManager {
 
     public int getStudentCount() {
         return studentCount;
+    }
+
+    public Student[] getAllStudents() {
+        Student[] result = new Student[studentCount];
+        for (int i = 0; i < studentCount; i++) {
+            result[i] = student[i];
+        }
+        return result;
     }
 
     public void setGradeManager(GradeManager gradeManager) {

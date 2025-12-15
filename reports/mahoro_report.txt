@@ -1,18 +1,18 @@
 ============================================================
 STUDENT ACADEMIC REPORT
 ============================================================
-Generated on: 2025-12-03 12:57:05
+Generated on: 2025-12-12 11:05:28
 
 STUDENT INFORMATION
 ----------------------------------------
-Student ID: STU003
-Name: Bruce lee
-Type: Honors Student
-Age: 44
-Email: mahro@gmail.com
+Student ID: STU001
+Name: Mahoro
+Type: Regular Student
+Age: 13
+Email: mahoro@gmail.com
 Phone: 0782817801
 Status: Active
-Passing Requirement: 60%
+Passing Requirement: 50%
 
 ACADEMIC SUMMARY
 ----------------------------------------
@@ -29,20 +29,26 @@ Average calculated from all recorded grades.
 ============================================================
 End of Report
 
-Grade Update on: 2025-12-03 12:57:31
+Grade Update on: 2025-12-12 11:05:48
 New Grade Added: Mathematics - 99.0%
 Updated Average: 99.0%
 Total Subjects: 1
 ----------------------------------------
 
-Grade Update on: 2025-12-03 12:57:50
-New Grade Added: Music - 99.0%
-Updated Average: 99.0%
+Grade Update on: 2025-12-12 11:06:08
+New Grade Added: English - 67.0%
+Updated Average: 83.0%
 Total Subjects: 2
 ----------------------------------------
 
-Grade Update on: 2025-12-03 13:03:27
-New Grade Added: Mathematics - 89.0%
-Updated Average: 94.0%
-Total Subjects: 2
+Grade Update on: 2025-12-12 11:06:25
+New Grade Added: Science - 65.0%
+Updated Average: 77.0%
+Total Subjects: 3
+----------------------------------------
+
+Grade Update on: 2025-12-12 11:07:36
+New Grade Added: English - 78.0%
+Updated Average: 80.7%
+Total Subjects: 3
 ----------------------------------------

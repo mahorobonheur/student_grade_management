@@ -1,18 +1,18 @@
 ============================================================
 STUDENT ACADEMIC REPORT
 ============================================================
-Generated on: 2025-12-15 10:41:14
+Generated on: 2025-12-03 16:43:39
 
 STUDENT INFORMATION
 ----------------------------------------
-Student ID: STU001
-Name: Mahoro Bonheur
-Type: Honors Student
-Age: 22
-Email: mahoro@example.com
-Phone: 9876543210
+Student ID: STU002
+Name: Maha aa
+Type: Regular Student
+Age: 12
+Email: mah@gmail.com
+Phone: 0785885859
 Status: Active
-Passing Requirement: 60%
+Passing Requirement: 50%
 
 ACADEMIC SUMMARY
 ----------------------------------------
